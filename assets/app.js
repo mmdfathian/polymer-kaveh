@@ -1,7 +1,7 @@
 (async()=>{
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-const fallback={settings:{siteName:'ژئوممبران اصفهان',phone1:'09133282241',phone2:'09162285494',whatsapp:'09133282241',intro:'ژئوممبران اصفهان با ۱۵ سال سابقه در فروش و اجرای ورق ژئوممبران فعالیت می‌کند.',metaTitle:'ژئوممبران در اصفهان | فروش و نصب ورق ژئوممبران',metaDescription:'فروش و نصب ورق ژئوممبران در اصفهان'},projects:[],posts:[]};
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#039;'}[m]));
+const fallback={settings:{siteName:'پلیمر کاوه',phone1:'09133282241',phone2:'09162285494',whatsapp:'09133282241',intro:'پلیمر کاوه با تیم مجرب و متخصص، در زمینه فروش و اجرای تمام loại محصولات پلیمری، ژئوممبران، و سیستم‌های عایق‌کاری فعالیت می‌کند.',metaTitle:'پلیمر کاوه | فروش و نصب محصولات پلیمری',metaDescription:'پلیمر کاوه با سابقه درخشان در فروش و اجرای محصولات پلیمری، ژئوممبران، و عایق‌کاری خدمات می‌دهد.'},projects:[],posts:[]};
 let data=fallback; try{const r=await fetch('./data/content.json',{cache:'no-store'}); if(r.ok)data=await r.json()}catch{}
 const s=data.settings||fallback.settings;
 document.title=s.metaTitle; const md=document.querySelector('meta[name="description"]'); if(md)md.content=s.metaDescription;
