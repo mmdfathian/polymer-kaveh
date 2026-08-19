@@ -45,7 +45,7 @@
 /* Mobile Navigation */
 @media (max-width: 800px) {
   .hamburger { display: flex; }
-  .navlinks { display: none; }  /* Hide desktop navlinks on mobile */
+  .header .navlinks { display: none; }  /* Hide desktop navlinks (inside header) on mobile */
   
   #nav-menu.navlinks {
     position: fixed;
@@ -54,6 +54,7 @@
     width: min(300px, 85vw);
     height: 100vh;
     background: #fff;
+    display: flex;
     flex-direction: column;
     padding: 100px 24px 32px;
     gap: 16px;
