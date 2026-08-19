@@ -12,33 +12,44 @@ document.querySelectorAll('[data-phone1-link]').forEach(e=>e.href='tel:'+s.phone
 const list=$('[data-projects]'); if(list){list.innerHTML=(data.projects||[]).map(p=>`<article class="card project"><a href="${esc(p.image)}" data-lightbox><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>'};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-lightbox]');if(!a)return;e.preventDefault();const o=document.createElement('div');o.className='lightbox';o.innerHTML=`<button aria-label="بستن">×</button><img src="${a.href}" alt="">`;document.body.appendChild(o);o.onclick=()=>o.remove()});
 
-/* Hamburger Menu Toggle - Fixed */
+/* Hamburger Menu Toggle - Debug version */
 function initHamburger(){
   const hamburger=$('.hamburger');
   const navMenu=$('#nav-menu');
+  console.log('Hamburger init:', { hamburger, navMenu });
   if(!hamburger || !navMenu){
     console.warn('Hamburger or navMenu not found');
     return;
   }
-  const overlay=document.createElement('div');overlay.className='nav-overlay';document.body.appendChild(overlay);
+  
+  // Create overlay
+  const overlay=document.createElement('div');
+  overlay.className='nav-overlay';
+  document.body.appendChild(overlay);
+  console.log('Overlay created:', overlay);
   
   function toggleMenu(forceClose){
     const isOpen = hamburger.getAttribute('aria-expanded')==='true';
     const shouldClose = forceClose || isOpen;
+    console.log('Toggle menu:', { isOpen, shouldClose });
     hamburger.setAttribute('aria-expanded', !shouldClose);
     navMenu.classList.toggle('open', !shouldClose);
     overlay.classList.toggle('visible', !shouldClose);
     document.body.style.overflow = shouldClose ? '' : 'hidden';
+    console.log('Classes after toggle:', { navMenu: navMenu.className, overlay: overlay.className });
   }
   
   hamburger.addEventListener('click', (e)=>{
     e.stopPropagation();
+    console.log('Hamburger clicked');
     toggleMenu();
   });
   
-  overlay.addEventListener('click', ()=> toggleMenu(true));
+  overlay.addEventListener('click', ()=> {
+    console.log('Overlay clicked');
+    toggleMenu(true);
+  });
   
-  // Close on link click but allow navigation
   navMenu.querySelectorAll('a').forEach(a=>{
     a.addEventListener('click', ()=> toggleMenu(true));
   });
@@ -47,13 +58,11 @@ function initHamburger(){
     if(e.key==='Escape' && navMenu.classList.contains('open')) toggleMenu(true);
   });
   
-  // Close on resize to desktop
   window.addEventListener('resize', ()=>{
     if(window.innerWidth > 800 && navMenu.classList.contains('open')) toggleMenu(true);
   });
 }
 
-// Initialize when DOM ready
 if(document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', initHamburger);
 }else{
