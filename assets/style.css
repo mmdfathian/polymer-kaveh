@@ -39,6 +39,9 @@
 }
 .navlinks a:hover { color: #078f83; }
 
+/* Standalone navlinks (mobile sidebar) hidden on desktop */
+#nav-menu.navlinks { display: none; }
+
 /* Mobile Navigation */
 @media (max-width: 800px) {
   .hamburger { display: flex; }
