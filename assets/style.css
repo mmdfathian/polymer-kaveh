@@ -39,14 +39,11 @@
 }
 .navlinks a:hover { color: #078f83; }
 
-/* Standalone navlinks (mobile sidebar) hidden on desktop */
-#nav-menu.navlinks { display: none; }
-
 /* Mobile Navigation */
 @media (max-width: 800px) {
   .hamburger { display: flex; }
   
-  .navlinks {
+  #nav-menu.navlinks {
     position: fixed;
     top: 0;
     right: -100%;
@@ -61,16 +58,16 @@
     z-index: 35;
     border-left: 1px solid #e7edf0;
   }
-  .navlinks.open { right: 0; }
-  .navlinks a {
+  #nav-menu.navlinks.open { right: 0; }
+  #nav-menu.navlinks a {
     font-size: 1.1rem;
     padding: 12px 0;
     border-bottom: 1px solid #f0f3f4;
     width: 100%;
     text-align: right;
   }
-  .navlinks a:last-child { border-bottom: none; }
-  .navlinks a:hover { color: #078f83; background: #f5faf9; border-radius: 8px; padding-right: 12px; }
+  #nav-menu.navlinks a:last-child { border-bottom: none; }
+  #nav-menu.navlinks a:hover { color: #078f83; background: #f5faf9; border-radius: 8px; padding-right: 12px; }
   
   /* Overlay when menu open */
   .nav-overlay {
