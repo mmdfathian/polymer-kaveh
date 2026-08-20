@@ -42,6 +42,10 @@
   --mobile-nav-bg:#fff;
   --mobile-nav-border:#e7edf0;
   --mobile-link-hover:#f5faf9;
+  /* Logo variables - match logo.html */
+  --logo-dark:#111e2f;
+  --logo-green:#008b87;
+  --logo-bg:#ffffff;
 }
 [data-theme="dark"]{
   --bg:#0f172a;
@@ -84,8 +88,21 @@
   --mobile-nav-bg:#1e293b;
   --mobile-nav-border:#334155;
   --mobile-link-hover:#1e3a3a;
+  /* Logo variables for dark mode */
+  --logo-dark:#e8eef7;
+  --logo-green:#12aaa5;
+  --logo-bg:#0b1220;
 }
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.9;transition:background var(--transition),color var(--transition)}a{color:inherit;text-decoration:none}.container{width:min(1120px,92%);margin:auto}.header{position:sticky;top:0;z-index:30;background:var(--header-bg);border-bottom:1px solid var(--header-border);transition:background var(--transition),border-color var(--transition)}.nav{min-height:68px;display:flex;align-items:center;gap:20px}.brand{font-weight:900;font-size:1.15rem;margin-left:auto;display:flex;align-items:center;gap:10px}.brand span{color:var(--primary)}.logo-img{height:72px;width:auto;border-radius:8px;object-fit:contain}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.9;transition:background var(--transition),color var(--transition)}a{color:inherit;text-decoration:none}.container{width:min(1120px,92%);margin:auto}.header{position:sticky;top:0;z-index:30;background:var(--header-bg);border-bottom:1px solid var(--header-border);transition:background var(--transition),border-color var(--transition)}.nav{min-height:68px;display:flex;align-items:center;gap:20px}.brand{font-weight:900;font-size:1.15rem;margin-left:auto;display:flex;align-items:center;gap:10px}.brand span{color:var(--primary)}.logo-img{height:72px;width:auto;border-radius:8px;object-fit:contain}.logo-svg{height:72px;width:auto;display:block}
+
+/* SVG Logo Colors */
+.logo-dark{fill:var(--logo-dark);transition:fill var(--transition)}
+.logo-green{fill:var(--logo-green);transition:fill var(--transition)}
+.logo-background{fill:var(--logo-bg);transition:fill var(--transition)}
+
+@media(max-width:800px){
+  .logo-img,.logo-svg{height:60px}
+}
 
 /* Theme Toggle Button */
 .theme-toggle{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border);color:var(--text);cursor:pointer;transition:all var(--transition);font-size:1.2rem}.theme-toggle:hover{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}.theme-toggle:focus{outline:none;box-shadow:0 0 0 3px var(--primary-light)}.theme-toggle svg{width:20px;height:20px}
