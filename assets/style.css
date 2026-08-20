@@ -148,3 +148,17 @@
 
 /* Smooth theme transition for all elements */
 *,*::before,*::after{transition:background-color var(--transition),border-color var(--transition),color var(--transition),box-shadow var(--transition)}
+
+/* ========================================
+   Scroll Reveal Animations
+   ======================================== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease-out,transform 0.6s ease-out}.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-fade{opacity:0;transition:opacity 0.6s ease-out}.reveal-fade.visible{opacity:1}
+.reveal-slide-right{opacity:0;transform:translateX(30px);transition:opacity 0.6s ease-out,transform 0.6s ease-out}.reveal-slide-right.visible{opacity:1;transform:translateX(0)}
+.reveal-scale{opacity:0;transform:scale(0.95);transition:opacity 0.6s ease-out,transform 0.6s ease-out}.reveal-scale.visible{opacity:1;transform:scale(1)}
+
+/* Stagger delays */
+.reveal:nth-child(1){transition-delay:0ms}.reveal:nth-child(2){transition-delay:80ms}.reveal:nth-child(3){transition-delay:160ms}.reveal:nth-child(4){transition-delay:240ms}.reveal:nth-child(5){transition-delay:320ms}.reveal:nth-child(6){transition-delay:400ms}.reveal:nth-child(7){transition-delay:480ms}.reveal:nth-child(8){transition-delay:560ms}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-fade,.reveal-slide-right,.reveal-scale{opacity:1;transform:none;transition:none}.reveal.visible,.reveal-fade.visible,.reveal-slide-right.visible,.reveal-scale.visible{opacity:1;transform:none}}

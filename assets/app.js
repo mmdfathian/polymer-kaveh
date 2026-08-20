@@ -9,7 +9,7 @@ const wa=n=>`https://wa.me/98${String(n).replace(/^0/,'').replace(/\\D/g,'')}`;
 const set=(sel,val)=>{document.querySelectorAll(sel).forEach(e=>e.innerHTML=val)};
 set('[data-site-name]',esc(s.siteName)); set('[data-phone1]',esc(s.phone1)); set('[data-phone2]',esc(s.phone2)); set('[data-intro]',esc(s.intro));
 document.querySelectorAll('[data-phone1-link]').forEach(e=>e.href='tel:'+s.phone1); document.querySelectorAll('[data-phone2-link]').forEach(e=>e.href='tel:'+s.phone2); document.querySelectorAll('[data-whatsapp]').forEach(e=>{e.href=wa(s.whatsapp||s.phone1)});
-const list=$('[data-projects]'); if(list){list.innerHTML=(data.projects||[]).map(p=>`<article class="card project"><a href="${esc(p.image)}" data-lightbox><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>'};
+const list=$('[data-projects]'); if(list){list.innerHTML=(data.projects||[]).map(p=>`<article class="card project reveal"><a href="${esc(p.image)}" data-lightbox><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>'};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-lightbox]');if(!a)return;e.preventDefault();const o=document.createElement('div');o.className='lightbox';o.innerHTML=`<button aria-label="بستن">×</button><img src="${a.href}" alt="">`;document.body.appendChild(o);o.onclick=()=>o.remove()});
 
 /* Theme Toggle */
@@ -85,11 +85,31 @@ function initHamburger(){
 function init(){
   initThemeToggle();
   initHamburger();
+  initScrollReveal();
   // Hide loading overlay after a short delay for smooth transition
   setTimeout(()=>{
     const loader=$('#loading-overlay');
     if(loader) loader.classList.add('hidden');
   },300);
+}
+
+/* Scroll Reveal Animations */
+function initScrollReveal(){
+  const prefersReduced=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(prefersReduced){
+    // Show all immediately if reduced motion
+    document.querySelectorAll('.reveal,.reveal-fade,.reveal-slide-right,.reveal-scale').forEach(el=>el.classList.add('visible'));
+    return;
+  }
+  const observer=new IntersectionObserver((entries,obs)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
+    });
+  },{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('.reveal,.reveal-fade,.reveal-slide-right,.reveal-scale').forEach(el=>observer.observe(el));
 }
 
 if(document.readyState === 'loading'){
