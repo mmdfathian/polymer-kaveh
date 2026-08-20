@@ -44,7 +44,7 @@
   --mobile-link-hover:#f5faf9;
   /* Logo variables - match logo.html */
   --logo-dark:#111e2f;
-  --logo-green:#008b87;
+  --logo-green:#08C4B4;
   --logo-bg:#ffffff;
 }
 [data-theme="dark"]{
@@ -90,7 +90,7 @@
   --mobile-link-hover:#1e3a3a;
   /* Logo variables for dark mode */
   --logo-dark:#e8eef7;
-  --logo-green:#12aaa5;
+  --logo-green:#08C4B4;
   --logo-bg:#0b1220;
 }
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.9;transition:background var(--transition),color var(--transition)}a{color:inherit;text-decoration:none}.container{width:min(1120px,92%);margin:auto}.header{position:sticky;top:0;z-index:30;background:var(--header-bg);border-bottom:1px solid var(--header-border);transition:background var(--transition),border-color var(--transition)}.nav{min-height:68px;display:flex;align-items:center;gap:20px}.brand{font-weight:900;font-size:1.15rem;margin-left:auto;display:flex;align-items:center;gap:10px}.brand span{color:var(--primary)}.logo-img{height:72px;width:auto;border-radius:8px;object-fit:contain}.logo-svg{height:72px;width:auto;display:block}
