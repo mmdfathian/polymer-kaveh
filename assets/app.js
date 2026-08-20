@@ -1,7 +1,7 @@
 (async()=>{
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>\"']/g,m=>({'&':'&','<':'<','>':'>','\"':'\"',"'":'&#039;'}[m]));
-const fallback={settings:{siteName:'پلیمر کاوه',phone1:'09133282241',phone2:'09162285494',whatsapp:'09133282241',intro:'پلیمر کاوه با تیم مجرب و متخصص، در زمینه فروش و اجرای تمام loại محصولات پلیمری، ژئومembreان، و سیستم‌های عایق‌کاری فعالیت می‌کند.',metaTitle:'پلیمر کاوه | فروش و نصب محصولات پلیمری',metaDescription:'پلیمر کاوه با سابقه درخشان در فروش و اجرای محصولات پلیمری، ژئومembreان، و عایق‌کاری خدمات می‌دهد.'},projects:[],posts:[]};
+const esc=s=>String(s??'').replace(/[&<>\\\"']/g,m=>({'&':'&','<':'<','>':'>','\\\"':'\\\"',"'":'&#039;'}[m]));
+const fallback={settings:{siteName:'پلیمر کاوه',phone1:'09133282241',phone2:'09162285494',whatsapp:'09133282241',intro:'پلیمر کاوه با تیم مجرب و متخصص، در زمینه فروش و اجرای تمام انواع محصولات پلیمری، ژئومembreان، و سیستم‌های عایق‌کاری فعالیت می‌کند.',metaTitle:'پلیمر کاوه | فروش و نصب محصولات پلیمری',metaDescription:'پلیمر کاوه با سابقه درخشان در فروش و اجرای محصولات پلیمری، ژئومembreان، و عایق‌کاری خدمات می‌دهد.'},projects:[]};
 let data=fallback; try{const r=await fetch('./data/content.json',{cache:'no-store'}); if(r.ok)data=await r.json()}catch{}
 const s=data.settings||fallback.settings;
 document.title=s.metaTitle; const md=document.querySelector('meta[name="description"]'); if(md)md.content=s.metaDescription;
@@ -11,6 +11,39 @@ set('[data-site-name]',esc(s.siteName)); set('[data-phone1]',esc(s.phone1)); set
 document.querySelectorAll('[data-phone1-link]').forEach(e=>e.href='tel:'+s.phone1); document.querySelectorAll('[data-phone2-link]').forEach(e=>e.href='tel:'+s.phone2); document.querySelectorAll('[data-whatsapp]').forEach(e=>{e.href=wa(s.whatsapp||s.phone1)});
 const list=$('[data-projects]'); if(list){list.innerHTML=(data.projects||[]).map(p=>`<article class="card project"><a href="${esc(p.image)}" data-lightbox><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>'};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-lightbox]');if(!a)return;e.preventDefault();const o=document.createElement('div');o.className='lightbox';o.innerHTML=`<button aria-label="بستن">×</button><img src="${a.href}" alt="">`;document.body.appendChild(o);o.onclick=()=>o.remove()});
+
+/* Theme Toggle */
+function initThemeToggle(){
+  const btn=$('.theme-toggle');
+  if(!btn) return;
+  const prefersDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+  const stored=localStorage.getItem('theme');
+  const initial=stored||(prefersDark?'dark':'light');
+  document.documentElement.setAttribute('data-theme',initial);
+  updateIcon(initial);
+  
+  btn.addEventListener('click',()=>{
+    const current=document.documentElement.getAttribute('data-theme')||'light';
+    const next=current==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    localStorage.setItem('theme',next);
+    updateIcon(next);
+  });
+  
+  function updateIcon(theme){
+    const sun=btn.querySelector('.sun-icon');
+    const moon=btn.querySelector('.moon-icon');
+    if(sun&&moon){
+      if(theme==='dark'){
+        sun.style.display='block';
+        moon.style.display='none';
+      }else{
+        sun.style.display='none';
+        moon.style.display='block';
+      }
+    }
+  }
+}
 
 /* Hamburger Menu Toggle */
 function initHamburger(){
@@ -49,9 +82,14 @@ function initHamburger(){
   });
 }
 
-if(document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', initHamburger);
-}else{
+function init(){
+  initThemeToggle();
   initHamburger();
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+}else{
+  init();
 }
 })();
