@@ -85,6 +85,11 @@ function initHamburger(){
 function init(){
   initThemeToggle();
   initHamburger();
+  // Hide loading overlay after a short delay for smooth transition
+  setTimeout(()=>{
+    const loader=$('#loading-overlay');
+    if(loader) loader.classList.add('hidden');
+  },300);
 }
 
 if(document.readyState === 'loading'){
