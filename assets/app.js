@@ -86,11 +86,77 @@ function init(){
   initThemeToggle();
   initHamburger();
   initScrollReveal();
+  initCopyPhone();
+  initScrollToTop();
   // Hide loading overlay after a short delay for smooth transition
   setTimeout(()=>{
     const loader=$('#loading-overlay');
     if(loader) loader.classList.add('hidden');
   },300);
+}
+
+/* Click-to-Copy Phone Numbers */
+function initCopyPhone(){
+  document.querySelectorAll('[data-phone1],[data-phone2]').forEach(el=>{
+    if(el.tagName === 'A') return; // Links already have href
+    el.style.cursor = 'pointer';
+    el.title = 'کلیک برای کپی';
+    el.addEventListener('click', async ()=>{
+      const text = el.textContent.trim();
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast(`کپی شد: ${text}`);
+      }catch(e){
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast(`کپی شد: ${text}`);
+      }
+    });
+  });
+}
+
+/* Scroll to Top Button */
+function initScrollToTop(){
+  const btn = document.createElement('button');
+  btn.className = 'scroll-to-top';
+  btn.setAttribute('aria-label', 'بالای صفحه');
+  btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>';
+  document.body.appendChild(btn);
+
+  const toggleBtn = () => {
+    if(window.scrollY > 300) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  };
+
+  window.addEventListener('scroll', toggleBtn, {passive: true});
+  toggleBtn();
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+}
+
+/* Toast Notification Helper */
+function showToast(message){
+  const existing = document.querySelector('.toast');
+  if(existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add('visible'));
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
 }
 
 /* Scroll Reveal Animations */
