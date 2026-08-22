@@ -41,25 +41,24 @@ document.addEventListener('click',e=>{
   o.onclick=()=>o.remove();
 });
 
-// DOM ready init
+// Render projects at TOP-LEVEL after data loaded (like working version)
+const list=$('[data-projects]');
+if(list){
+  console.log('Top-level rendering projects, count:', data.projects?.length);
+  list.innerHTML=(data.projects||[]).map(p=>{
+    const webp=p.image.replace(/\.jpg$/i,'.webp');
+    return `<article class="card project reveal"><a href="${esc(p.image)}" data-lightbox><picture><source srcset="${esc(webp)}" type="image/webp"><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></picture></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`;
+  }).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>';
+}
+
+// DOM ready init for UI features only
 function init(){
-  console.log('init() called, data.projects:', data.projects?.length);
+  console.log('init() called');
   initThemeToggle();
   initHamburger();
   initScrollReveal();
   initCopyPhone();
   initScrollToTop();
-  
-  // Render projects
-  const list=$('[data-projects]');
-  console.log('data-projects element found:', !!list);
-  if(list){
-    console.log('Rendering projects, count:', data.projects?.length);
-    list.innerHTML=(data.projects||[]).map(p=>{
-      const webp=p.image.replace(/\.jpg$/i,'.webp');
-      return `<article class="card project reveal"><a href="${esc(p.image)}" data-lightbox><picture><source srcset="${esc(webp)}" type="image/webp"><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></picture></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`;
-    }).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>';
-  }
   
   setTimeout(()=>{
     const loader=$('#loading-overlay');
