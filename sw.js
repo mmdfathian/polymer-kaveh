@@ -4,18 +4,18 @@
  * Scope: / (GitHub Pages root)
  */
 
-const CACHE_NAME = 'polymer-kaveh-v20260822-02';
+const CACHE_NAME = 'polymer-kaveh-v20260822-03';
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/projects.html',
-  '/about.html',
-  '/calculator.html',
-  '/assets/style.css',
-  '/assets/app.js',
-  '/assets/calculator.js',
-  '/images/logo.svg',
-  '/data/content.json',
+  './',
+  './index.html',
+  './projects.html',
+  './about.html',
+  './calculator.html',
+  './assets/style.css',
+  './assets/app.js',
+  './assets/calculator.js',
+  './images/logo.svg',
+  './data/content.json',
 ];
 
 // Patterns that should use Network First (fresh data)
@@ -31,7 +31,13 @@ const CACHE_FIRST_PATTERNS = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then((cache) => Promise.allSettled(
+        PRECACHE_ASSETS.map((url) =>
+          cache.add(new Request(url, { cache: 'reload' })).catch((err) => {
+            console.warn('[SW] precache skipped:', url, err);
+          })
+        )
+      ))
       .then(() => self.skipWaiting())
   );
 });
