@@ -120,6 +120,15 @@
    Calculator Page Styles
    ======================================== */
 
+.calculator-cta{
+  background:var(--cta-calc-bg);
+  color:var(--cta-calc-text);
+}
+.calculator-cta h2,
+.calculator-cta p{
+  color:var(--cta-calc-text);
+}
+
 .calc-form{
   display:flex;
   flex-direction:column;
