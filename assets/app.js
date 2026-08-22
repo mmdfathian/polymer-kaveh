@@ -21,7 +21,7 @@ const s=data.settings||fallback.settings;
 document.title=s.metaTitle;
 const md=document.querySelector('meta[name="description"]');
 if(md) md.content=s.metaDescription;
-const wa=n=>`https://wa.me/98${String(n).replace(/^0/,'').replace(/\D/g,'')}`;
+const wa=n=>`https://wa.me/98${String(n).replace(/^0/,'').replace(/\\D/g,'')}`;
 const set=(sel,val)=>{document.querySelectorAll(sel).forEach(e=>e.innerHTML=val)};
 set('[data-site-name]',esc(s.siteName));
 set('[data-phone1]',esc(s.phone1));
@@ -46,7 +46,7 @@ const list=$('[data-projects]');
 if(list){
   console.log('Top-level rendering projects, count:', data.projects?.length);
   list.innerHTML=(data.projects||[]).map(p=>{
-    const webp=p.image.replace(/\.jpg$/i,'.webp');
+    const webp=p.image.replace(/\\.jpg$/i,'.webp');
     return `<article class="card project reveal"><a href="${esc(p.image)}" data-lightbox><picture><source srcset="${esc(webp)}" type="image/webp"><img src="${esc(p.image)}" loading="lazy" alt="${esc(p.title)}"></picture></a><div class="project-body"><small>${esc(p.category)}</small><h3>${esc(p.title)}</h3><p>${esc(p.description)}</p></div></article>`;
   }).join('')||'<p class="muted">نمونه‌کارها به‌زودی اضافه می‌شوند.</p>';
 }
@@ -224,6 +224,114 @@ function initScrollReveal(){
   },{threshold:0.1,rootMargin:'0px 0px -50px 0px'});
   document.querySelectorAll('.reveal,.reveal-fade,.reveal-slide-right,.reveal-scale').forEach(el=>observer.observe(el));
 }
+
+/* Touch-Follow Gradient Controller */
+(function initTouchFollowGradient(){
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(prefersReduced) return;
+
+  const root = document.documentElement;
+  const hero = document.querySelector('.hero');
+  const logoSvg = document.querySelector('.logo-svg');
+  const cards = document.querySelectorAll('.card.project, .use-card, .feature');
+  let rafId = null;
+  let mouseX = 50;
+  let mouseY = 50;
+  let isMouseMoving = false;
+  let mouseTimeout = null;
+
+  // Throttled mouse position update
+  function updateMousePosition(clientX, clientY){
+    mouseX = (clientX / window.innerWidth) * 100;
+    mouseY = (clientY / window.innerHeight) * 100;
+    root.style.setProperty('--mouse-x', mouseX + '%');
+    root.style.setProperty('--mouse-y', mouseY + '%');
+
+    // Body ambient glow activation
+    document.body.classList.add('has-mouse');
+
+    // Hero spotlight (only when hovering hero)
+    if(hero && isMouseOverElement(clientX, clientY, hero)){
+      hero.style.setProperty('--mouse-x', mouseX + '%');
+      hero.style.setProperty('--mouse-y', mouseY + '%');
+    }
+
+    // Card magnetic glow
+    cards.forEach(card => {
+      if(isMouseOverElement(clientX, clientY, card)){
+        const rect = card.getBoundingClientRect();
+        const cardX = ((clientX - rect.left) / rect.width) * 100;
+        const cardY = ((clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--card-glow-x', cardX + '%');
+        card.style.setProperty('--card-glow-y', cardY + '%');
+        card.style.setProperty('--card-glow-opacity', '0.12');
+      }else{
+        card.style.setProperty('--card-glow-opacity', '0');
+      }
+    });
+
+    // Logo reactive glow (when mouse near header)
+    if(logoSvg && isMouseNearElement(clientX, clientY, logoSvg, 150)){
+      logoSvg.classList.add('glowing');
+    }else if(logoSvg){
+      logoSvg.classList.remove('glowing');
+    }
+  }
+
+  function isMouseOverElement(x, y, el){
+    const rect = el.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }
+
+  function isMouseNearElement(x, y, el, threshold){
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dist = Math.hypot(x - centerX, y - centerY);
+    return dist < threshold;
+  }
+
+  // Mouse move handler (throttled with RAF)
+  function onMouseMove(e){
+    if(!isMouseMoving){
+      isMouseMoving = true;
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        updateMousePosition(e.clientX, e.clientY);
+        isMouseMoving = false;
+      });
+    }
+
+    // Reset inactivity timeout
+    clearTimeout(mouseTimeout);
+    mouseTimeout = setTimeout(() => {
+      document.body.classList.remove('has-mouse');
+      cards.forEach(card => card.style.setProperty('--card-glow-opacity', '0'));
+      if(logoSvg) logoSvg.classList.remove('glowing');
+    }, 3000);
+  }
+
+  // Touch support
+  function onTouchMove(e){
+    if(e.touches.length > 0){
+      onMouseMove(e.touches[0]);
+    }
+  }
+
+  // Event listeners
+  document.addEventListener('mousemove', onMouseMove, {passive: true});
+  document.addEventListener('touchmove', onTouchMove, {passive: true});
+  document.addEventListener('touchstart', onTouchMove, {passive: true});
+
+  // Cleanup on page hide
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden){
+      document.body.classList.remove('has-mouse');
+      cards.forEach(card => card.style.setProperty('--card-glow-opacity', '0'));
+      if(logoSvg) logoSvg.classList.remove('glowing');
+    }
+  });
+})();
 
 // Register Service Worker
 if('serviceWorker' in navigator){

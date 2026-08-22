@@ -46,6 +46,15 @@
   --logo-dark:#111e2f;
   --logo-green:#08C4B4;
   --logo-bg:#ffffff;
+  /* Touch-follow gradient variables */
+  --mouse-x:50%;
+  --mouse-y:50%;
+  --glow-size:300px;
+  --glow-opacity:0.15;
+  --glow-color:var(--primary);
+  --card-glow-x:50%;
+  --card-glow-y:50%;
+  --card-glow-opacity:0;
 }
 [data-theme="dark"]{
   --bg:#0f172a;
@@ -92,9 +101,96 @@
   --logo-dark:#e8eef7;
   --logo-green:#08C4B4;
   --logo-bg:#0b1220;
+  /* Touch-follow gradient variables for dark mode */
+  --glow-opacity:0.25;
+  --glow-color:var(--primary);
 }
 
-/* Loading Overlay */
+/* ========================================
+   Touch-Follow Gradient Effects
+   ======================================== */
+
+/* 1. Hero Spotlight - radial gradient following mouse */
+.hero{
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle var(--glow-size) at var(--mouse-x) var(--mouse-y), var(--glow-color) var(--glow-opacity), transparent 70%);
+  opacity:0;
+  transition:opacity 0.3s ease;
+  z-index:0;
+}
+.hero:hover::before{
+  opacity:1;
+}
+.hero > *{
+  position:relative;
+  z-index:1;
+}
+
+/* 2. Full-page Ambient Glow (subtle, on body) */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:radial-gradient(circle 400px at var(--mouse-x) var(--mouse-y), var(--glow-color) calc(var(--glow-opacity) * 0.3), transparent 80%);
+  opacity:0;
+  transition:opacity 0.5s ease;
+  z-index:-1;
+}
+body.has-mouse::after{
+  opacity:1;
+}
+
+/* 3. Card Magnetic Glow */
+.card.project,
+.use-card,
+.feature{
+  position:relative;
+  overflow:hidden;
+}
+.card.project::before,
+.use-card::before,
+.feature::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:inherit;
+  background:radial-gradient(circle 150px at var(--card-glow-x) var(--card-glow-y), var(--glow-color) var(--card-glow-opacity), transparent 70%);
+  pointer-events:none;
+  opacity:var(--card-glow-opacity);
+  transition:opacity 0.2s ease;
+  z-index:-1;
+}
+
+/* 4. SVG Logo Reactive Glow */
+.logo-svg{
+  filter:drop-shadow(0 0 0 transparent);
+  transition:filter 0.3s ease;
+}
+.logo-svg.glowing{
+  filter:drop-shadow(0 0 20px var(--primary));
+}
+
+/* Reduced motion - disable all gradient animations */
+@media(prefers-reduced-motion:reduce){
+  .hero::before,
+  body::after,
+  .card.project::before,
+  .use-card::before,
+  .feature::before{
+    display:none !important;
+  }
+  .logo-svg{
+    filter:none !important;
+  }
+}
 #loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s ease,visibility .4s ease}.loading-spinner{width:60px;height:60px;animation:spin 1s linear infinite}.spinner-track{stroke:var(--border)}.spinner-fill{stroke:var(--primary);transform-origin:center;animation:dash 1.5s ease-in-out infinite}@keyframes spin{to{transform:rotate(360deg)}}@keyframes dash{0%{stroke-dashoffset:0;stroke-dasharray:1,150}50%{stroke-dashoffset:-40;stroke-dasharray:90,150}100%{stroke-dashoffset:-120;stroke-dasharray:90,150}}.loading-text{margin-top:16px;font:700 1.1rem/1 var(--text);color:var(--text)}#loading-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.9;transition:background var(--transition),color var(--transition)}a{color:inherit;text-decoration:none}.container{width:min(1120px,92%);margin:auto}.header{position:sticky;top:0;z-index:30;background:var(--header-bg);border-bottom:1px solid var(--header-border);transition:background var(--transition),border-color var(--transition)}.nav{min-height:68px;display:flex;align-items:center;gap:20px}.brand{font-weight:900;font-size:1.15rem;margin-left:auto;display:flex;align-items:center;gap:10px}.brand span{color:var(--primary)}.logo-img{height:72px;width:auto;border-radius:8px;object-fit:contain}.logo-svg{height:72px;width:auto;display:block}
 
