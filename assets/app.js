@@ -1,16 +1,20 @@
 (async()=>{
 const $=s=>document.querySelector(s);
-const esc=s=>String(s??'').replace(/[&<>\\"']/g,m=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#039;'}[m)));
+const esc=s=>String(s??'').replace(/[&<>\\"']/g,m=>({'&':'&','<':'<','>':'>','"':'"',"'":'&#039;'}[m]));
 const fallback={settings:{siteName:'پلیمر کاوه',phone1:'09133282241',phone2:'09162285494',whatsapp:'09133282241',intro:'پلیمر کاوه با تیم مجرب و متخصص، در زمینه فروش و اجرای تمام انواع محصولات پلیمری، ژئومembreان، و سیستم‌های عایق‌کاری فعالیت می‌کند.',metaTitle:'پلیمر کاوه | فروش و نصب محصولات پلیمری',metaDescription:'پلیمر کاوه با سابقه درخشان در فروش و اجرای محصولات پلیمری، ژئومembreان، و عایق‌کاری خدمات می‌دهد.'},projects:[]};
 
 // Load data first
 let data=fallback;
 try{
   const r=await fetch('./data/content.json',{cache:'no-store'});
-  if(r.ok) data=await r.json();
-  console.log('Data loaded:', data.projects?.length, 'projects');
+  if(r.ok){
+    data=await r.json();
+    console.log('Data loaded successfully:', data.projects?.length, 'projects');
+  }else{
+    console.error('Fetch failed with status:', r.status);
+  }
 }catch(e){
-  console.error('Fetch failed:', e);
+  console.error('Fetch error:', e);
 }
 
 const s=data.settings||fallback.settings;
@@ -39,6 +43,7 @@ document.addEventListener('click',e=>{
 
 // DOM ready init
 function init(){
+  console.log('init() called, data.projects:', data.projects?.length);
   initThemeToggle();
   initHamburger();
   initScrollReveal();
@@ -47,6 +52,7 @@ function init(){
   
   // Render projects
   const list=$('[data-projects]');
+  console.log('data-projects element found:', !!list);
   if(list){
     console.log('Rendering projects, count:', data.projects?.length);
     list.innerHTML=(data.projects||[]).map(p=>{
