@@ -3,263 +3,225 @@
  * Calculates sheet area and volume for agricultural pools
  */
 
-(function initCalculator(){
+(function(){
   'use strict';
 
   // DOM Elements
-  const form = document.getElementById('calc-form');
-  const poolType = document.getElementById('pool-type');
-  const rectInputs = document.getElementById('rect-inputs');
-  const cylInputs = document.getElementById('cyl-inputs');
-  const resultsCard = document.getElementById('results-card');
-  const calcBtn = document.getElementById('calc-btn');
-  const whatsappCta = document.getElementById('whatsapp-cta');
-  const formulaDisplay = document.getElementById('formula-display');
-
+  const poolType = document.getElementById('poolType');
+  const lengthInput = document.getElementById('length');
+  const widthInput = document.getElementById('width');
+  const heightInput = document.getElementById('height');
+  const radiusInput = document.getElementById('radius');
+  const marginInput = document.getElementById('margin');
+  const radiusGroup = document.getElementById('radiusGroup');
+  const calcBtn = document.getElementById('calcBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  
   // Result elements
-  const resArea = document.getElementById('res-area');
-  const resVolume = document.getElementById('res-volume');
-  const resFloor = document.getElementById('res-floor');
-  const resWalls = document.getElementById('res-walls');
-  const resMargin = document.getElementById('res-margin');
+  const resultSheet = document.getElementById('resultSheet');
+  const resultVolume = document.getElementById('resultVolume');
+  const sheetArea = document.getElementById('sheetArea');
+  const volume = document.getElementById('volume');
+  const detailBox = document.getElementById('detailBox');
+  const detailFloor = document.getElementById('detailFloor');
+  const detailWalls = document.getElementById('detailWalls');
+  const detailMargin = document.getElementById('detailMargin');
+  const detailInner = document.getElementById('detailInner');
+  const resultCta = document.getElementById('resultCta');
+  const whatsappCta = document.getElementById('whatsappCta');
+  const phoneCta = document.getElementById('phoneCta');
 
-  let lastCalculation = null;
+  // State
+  let lastResult = null;
 
-  // Input visibility toggle
-  poolType.addEventListener('change', () => {
-    const type = poolType.value;
-    rectInputs.style.display = (type === 'sloped-45' || type === 'sloped-60' || type === 'vertical') ? 'grid' : 'none';
-    cylInputs.style.display = (type === 'cylindrical') ? 'block' : 'none';
-    resultsCard.style.display = 'none';
-  });
+  // Constants
+  const S_VALUES = {
+    sloped45: 1,
+    sloped60: 1 / Math.sqrt(3), // 0.57735... more accurate than 0.5
+  };
+  const PI = Math.PI;
 
-  // Format number with Persian digits and separators
-  function formatNumber(num, decimals = 2){
-    if (num === null || num === undefined || isNaN(num)) return '—';
-    return num.toLocaleString('fa-IR', {
-      minimumFractionDigits: decimals,
-      maximumFractionDigits: decimals
-    });
+  // Format number with Persian digits and 2 decimals
+  function formatNumber(num) {
+    if (!isFinite(num)) return '—';
+    return num.toLocaleString('fa-IR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  // Show formula for selected type
-  function showFormula(type){
-    const formulas = {
-      'sloped-45': `
-        <h4>مستطیلی - دیواره شیب‌دار ۴۵°</h4>
-        <ul>
-          <li>S = 1 (tan 45°)</li>
-          <li>d = H × S</li>
-          <li>L<sub>کف</sub> = L − 2d</li>
-          <li>W<sub>کف</sub> = W − 2d</li>
-          <li>s = √(H² + d²)</li>
-          <li>V = H/3 × [LW + L<sub>کف</sub>W<sub>کف</sub> + √(LW × L<sub>کف</sub>W<sub>کف</sub>)]</li>
-          <li>A<sub>کف</sub> = L<sub>کف</sub> × W<sub>کف</sub></li>
-          <li>A<sub>دیواره</sub> = s × (L + L<sub>کف</sub> + W + W<sub>کف</sub>)</li>
-          <li>A<sub>داخل</sub> = A<sub>کف</sub> + A<sub>دیواره</sub></li>
-          <li>P = 2L + 2W</li>
-          <li>A<sub>مهار</sub> = P × M</li>
-          <li><strong>A<sub>ورق</sub> = A<sub>داخل</sub> + A<sub>مهار</sub></strong></li>
-        </ul>
-      `,
-      'sloped-60': `
-        <h4>مستطیلی - دیواره شیب‌دار ۶۰°</h4>
-        <ul>
-          <li>S = 0.5 (tan 30° ≈ 0.577)</li>
-          <li>d = H × S</li>
-          <li>L<sub>کف</sub> = L − 2d</li>
-          <li>W<sub>کف</sub> = W − 2d</li>
-          <li>s = √(H² + d²)</li>
-          <li>V = H/3 × [LW + L<sub>کف</sub>W<sub>کف</sub> + √(LW × L<sub>کف</sub>W<sub>کف</sub>)]</li>
-          <li>A<sub>کف</sub> = L<sub>کف</sub> × W<sub>کف</sub></li>
-          <li>A<sub>دیواره</sub> = s × (L + L<sub>کف</sub> + W + W<sub>کف</sub>)</li>
-          <li>A<sub>داخل</sub> = A<sub>کف</sub> + A<sub>دیواره</sub></li>
-          <li>P = 2L + 2W</li>
-          <li>A<sub>مهار</sub> = P × M</li>
-          <li><strong>A<sub>ورق</sub> = A<sub>داخل</sub> + A<sub>مهار</sub></strong></li>
-        </ul>
-      `,
-      'vertical': `
-        <h4>مستطیلی - دیواره عمودی</h4>
-        <ul>
-          <li>V = L × W × H</li>
-          <li>A<sub>کف</sub> = L × W</li>
-          <li>A<sub>دیواره</sub> = 2LH + 2WH</li>
-          <li>A<sub>داخل</sub> = LW + 2LH + 2WH</li>
-          <li>P = 2L + 2W</li>
-          <li>A<sub>مهار</sub> = P × M</li>
-          <li><strong>A<sub>ورق</sub> = A<sub>داخل</sub> + A<sub>مهار</sub></strong></li>
-        </ul>
-      `,
-      'cylindrical': `
-        <h4>استوانه‌ای</h4>
-        <ul>
-          <li>V = π × r² × H</li>
-          <li>A<sub>کف</sub> = π × r²</li>
-          <li>A<sub>دیواره</sub> = 2π × r × H</li>
-          <li>A<sub>داخل</sub> = πr² + 2πrH</li>
-          <li>P = 2π × r</li>
-          <li>A<sub>مهار</sub> = P × M</li>
-          <li><strong>A<sub>ورق</sub> = A<sub>داخل</sub> + A<sub>مهار</sub></strong></li>
-          <li><small>π ≈ 3.14159</small></li>
-        </ul>
-      `
+  // Format for WhatsApp message (plain numbers)
+  function formatPlain(num) {
+    if (!isFinite(num)) return '0';
+    return num.toFixed(2);
+  }
+
+  // Validate inputs
+  function getInputs() {
+    const type = poolType.value;
+    const L = parseFloat(lengthInput.value) || 0;
+    const W = parseFloat(widthInput.value) || 0;
+    const H = parseFloat(heightInput.value) || 0;
+    const r = parseFloat(radiusInput.value) || 0;
+    const M = parseFloat(marginInput.value) || 0;
+
+    return { type, L, W, H, r, M };
+  }
+
+  // Show/hide radius field based on pool type
+  function toggleRadiusField() {
+    const type = poolType.value;
+    radiusGroup.style.display = type === 'cylindrical' ? 'block' : 'none';
+    
+    // Toggle required attribute
+    radiusInput.required = type === 'cylindrical';
+    lengthInput.required = type !== 'cylindrical';
+    widthInput.required = type !== 'cylindrical';
+  }
+
+  // Calculate for sloped walls (45° or 60°)
+  function calculateSloped(L, W, H, M, S) {
+    const d = H * S;
+    const L_floor = Math.max(0, L - 2 * d);
+    const W_floor = Math.max(0, W - 2 * d);
+    const s = Math.sqrt(H * H + d * d);
+    
+    const V = (H / 3) * (L * W + L_floor * W_floor + Math.sqrt(L * W * L_floor * W_floor));
+    
+    const A_floor = L_floor * W_floor;
+    const A_walls = s * (L + L_floor + W + W_floor);
+    const A_inner = A_floor + A_walls;
+    
+    const P = 2 * L + 2 * W;
+    const A_margin = P * M;
+    const A_sheet = A_inner + A_margin;
+
+    return {
+      V, A_sheet, A_floor, A_walls, A_margin, A_inner,
+      L_floor, W_floor, d, s
     };
-    formulaDisplay.innerHTML = formulas[type] || '';
   }
 
-  // Main calculation function
-  function calculate(){
-    const type = poolType.value;
-    const height = parseFloat(document.getElementById('height').value);
-    const margin = parseFloat(document.getElementById('margin').value);
+  // Calculate for vertical walls
+  function calculateVertical(L, W, H, M) {
+    const V = L * W * H;
+    const A_floor = L * W;
+    const A_walls = 2 * L * H + 2 * W * H;
+    const A_inner = A_floor + A_walls;
+    const P = 2 * L + 2 * W;
+    const A_margin = P * M;
+    const A_sheet = A_inner + A_margin;
 
-    if (!type || isNaN(height) || isNaN(margin) || height <= 0 || margin < 0){
-      showToast('لطفاً تمام فیلدها را به‌درستی پر کنید');
-      return null;
+    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner };
+  }
+
+  // Calculate for cylindrical
+  function calculateCylindrical(r, H, M) {
+    const V = PI * r * r * H;
+    const A_floor = PI * r * r;
+    const A_walls = 2 * PI * r * H;
+    const A_inner = A_floor + A_walls;
+    const P = 2 * PI * r;
+    const A_margin = P * M;
+    const A_sheet = A_inner + A_margin;
+
+    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner };
+  }
+
+  // Main calculation
+  function calculate() {
+    const { type, L, W, H, r, M } = getInputs();
+
+    // Validation
+    if (type === 'cylindrical') {
+      if (r <= 0 || H <= 0) {
+        showToast('لطفاً شعاع و ارتفاع را وارد کنید');
+        return null;
+      }
+    } else {
+      if (L <= 0 || W <= 0 || H <= 0) {
+        showToast('لطفاً طول، عرض و ارتفاع را وارد کنید');
+        return null;
+      }
     }
 
-    let result = {};
+    let result;
 
-    if (type === 'sloped-45' || type === 'sloped-60'){
-      const length = parseFloat(document.getElementById('length').value);
-      const width = parseFloat(document.getElementById('width').value);
-
-      if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0){
-        showToast('طول و عرض را وارد کنید');
+    switch (type) {
+      case 'sloped45':
+        result = calculateSloped(L, W, H, M, S_VALUES.sloped45);
+        break;
+      case 'sloped60':
+        result = calculateSloped(L, W, H, M, S_VALUES.sloped60);
+        break;
+      case 'vertical':
+        result = calculateVertical(L, W, H, M);
+        break;
+      case 'cylindrical':
+        result = calculateCylindrical(r, H, M);
+        break;
+      default:
         return null;
-      }
-
-      const S = type === 'sloped-45' ? 1 : 0.5;
-      const d = height * S;
-      const L_floor = length - 2 * d;
-      const W_floor = width - 2 * d;
-
-      if (L_floor <= 0 || W_floor <= 0){
-        showToast('ارتفاع بسیار زیاد است برای ابعاد داده‌شده (کف منفی می‌شود)');
-        return null;
-      }
-
-      const s = Math.sqrt(height * height + d * d);
-      const floorArea = L_floor * W_floor;
-      const topArea = length * width;
-      const volume = (height / 3) * (topArea + floorArea + Math.sqrt(topArea * floorArea));
-      const wallArea = s * (length + L_floor + width + W_floor);
-      const innerArea = floorArea + wallArea;
-      const perimeter = 2 * (length + width);
-      const marginArea = perimeter * margin;
-      const sheetArea = innerArea + marginArea;
-
-      result = {
-        type,
-        S, d, L_floor, W_floor, s,
-        volume,
-        floorArea,
-        wallArea,
-        innerArea,
-        marginArea,
-        sheetArea,
-        length, width, height, margin
-      };
-
-    } else if (type === 'vertical'){
-      const length = parseFloat(document.getElementById('length').value);
-      const width = parseFloat(document.getElementById('width').value);
-
-      if (isNaN(length) || isNaN(width) || length <= 0 || width <= 0){
-        showToast('طول و عرض را وارد کنید');
-        return null;
-      }
-
-      const volume = length * width * height;
-      const floorArea = length * width;
-      const wallArea = 2 * length * height + 2 * width * height;
-      const innerArea = floorArea + wallArea;
-      const perimeter = 2 * (length + width);
-      const marginArea = perimeter * margin;
-      const sheetArea = innerArea + marginArea;
-
-      result = {
-        type,
-        volume,
-        floorArea,
-        wallArea,
-        innerArea,
-        marginArea,
-        sheetArea,
-        length, width, height, margin
-      };
-
-    } else if (type === 'cylindrical'){
-      const radius = parseFloat(document.getElementById('radius').value);
-
-      if (isNaN(radius) || radius <= 0){
-        showToast('شعاع را وارد کنید');
-        return null;
-      }
-
-      const PI = Math.PI;
-      const volume = PI * radius * radius * height;
-      const floorArea = PI * radius * radius;
-      const wallArea = 2 * PI * radius * height;
-      const innerArea = floorArea + wallArea;
-      const perimeter = 2 * PI * radius;
-      const marginArea = perimeter * margin;
-      const sheetArea = innerArea + marginArea;
-
-      result = {
-        type,
-        volume,
-        floorArea,
-        wallArea,
-        innerArea,
-        marginArea,
-        sheetArea,
-        radius, height, margin
-      };
     }
 
-    lastCalculation = result;
+    lastResult = { ...result, type, L, W, H, r, M };
     return result;
   }
 
   // Update UI with results
-  function updateResults(result){
+  function updateUI(result) {
     if (!result) return;
 
-    resArea.textContent = formatNumber(result.sheetArea);
-    resVolume.textContent = formatNumber(result.volume);
-    resFloor.textContent = formatNumber(result.floorArea);
-    resWalls.textContent = formatNumber(result.wallArea);
-    resMargin.textContent = formatNumber(result.marginArea);
+    sheetArea.textContent = formatNumber(result.A_sheet);
+    volume.textContent = formatNumber(result.V);
+    
+    detailFloor.textContent = formatNumber(result.A_floor) + ' m²';
+    detailWalls.textContent = formatNumber(result.A_walls) + ' m²';
+    detailMargin.textContent = formatNumber(result.A_margin) + ' m²';
+    detailInner.textContent = formatNumber(result.A_inner) + ' m²';
 
-    // Update WhatsApp CTA with pre-filled message
-    const msg = encodeURIComponent(
-      `سلام، محاسبه ورق ژئوممبران استخر کشاورزی:\n\n` +
-      `نوع: ${getTypeLabel(result.type)}\n` +
-      `مساحت ورق: ${formatNumber(result.sheetArea)} متر مربع\n` +
-      `حجم استخر: ${formatNumber(result.volume)} متر مکعب\n\n` +
-      `لطفاً قیمت و مشاوره دهید.`
-    );
-    whatsappCta.href = `https://wa.me/989133282241?text=${msg}`;
+    resultSheet.style.display = 'flex';
+    resultVolume.style.display = 'flex';
+    detailBox.style.display = 'block';
+    resultCta.style.display = 'block';
 
-    showFormula(result.type);
-    resultsCard.style.display = 'block';
-    resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Update WhatsApp link with pre-filled message
+    updateWhatsAppLink(result);
   }
 
-  function getTypeLabel(type){
-    const labels = {
-      'sloped-45': 'مستطیلی - دیواره شیب‌دار ۴۵°',
-      'sloped-60': 'مستطیلی - دیواره شیب‌دار ۶۰°',
-      'vertical': 'مستطیلی - دیواره عمودی',
-      'cylindrical': 'استوانه‌ای'
+  // Generate WhatsApp message with results
+  function updateWhatsAppLink(result) {
+    const typeLabels = {
+      sloped45: 'مستطیلی - دیواره شیب‌دار ۴۵°',
+      sloped60: 'مستطیلی - دیواره شیب‌دار ۶۰°',
+      vertical: 'مستطیلی - دیواره عمودی',
+      cylindrical: 'استوانه‌ای'
     };
-    return labels[type] || type;
+
+    const typeLabel = typeLabels[lastResult.type] || '';
+    const dims = lastResult.type === 'cylindrical' 
+      ? `شعاع: ${formatPlain(lastResult.r)}م، ارتفاع: ${formatPlain(lastResult.H)}م`
+      : `طول: ${formatPlain(lastResult.L)}م، عرض: ${formatPlain(lastResult.W)}م، ارتفاع: ${formatPlain(lastResult.H)}م`;
+
+    const message = `محاسبه ورق ژئوممبران - پلیمر کاوه
+نوع: ${typeLabel}
+${dims}
+مهار: ${formatPlain(lastResult.M)}م
+
+📊 نتایج:
+▫️ مساحت کل ورق: ${formatPlain(result.A_sheet)} m²
+▫️ حجم استخر: ${formatPlain(result.V)} m³
+
+جزئیات:
+• مساحت کف: ${formatPlain(result.A_floor)} m²
+• مساحت دیواره‌ها: ${formatPlain(result.A_walls)} m²
+• مساحت مهار: ${formatPlain(result.A_margin)} m²
+
+جهت استعلام قیمت و سفارش تماس بگیرید.`;
+
+    const encoded = encodeURIComponent(message);
+    whatsappCta.href = `https://wa.me/989133282241?text=${encoded}`;
   }
 
-  // Toast notification (reuse from app.js or define local)
-  function showToast(message){
+  // Show toast notification
+  function showToast(message) {
     const existing = document.querySelector('.toast');
     if (existing) existing.remove();
 
@@ -273,58 +235,53 @@
     setTimeout(() => {
       toast.classList.remove('visible');
       setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 2500);
+  }
+
+  // Reset form
+  function reset() {
+    lengthInput.value = '';
+    widthInput.value = '';
+    heightInput.value = '';
+    radiusInput.value = '';
+    marginInput.value = '0.3';
+    poolType.value = 'sloped45';
+    
+    resultSheet.style.display = 'none';
+    resultVolume.style.display = 'none';
+    detailBox.style.display = 'none';
+    resultCta.style.display = 'none';
+    
+    lastResult = null;
+    toggleRadiusField();
   }
 
   // Event listeners
+  poolType.addEventListener('change', toggleRadiusField);
+  
   calcBtn.addEventListener('click', () => {
     const result = calculate();
-    if (result) updateResults(result);
+    if (result) updateUI(result);
   });
 
-  // Real-time calculation on input change (debounced)
-  let calcTimeout = null;
-  const inputs = form.querySelectorAll('input, select');
+  resetBtn.addEventListener('click', reset);
+
+  // Real-time calculation on input (debounced)
+  let calcTimeout;
+  const inputs = [lengthInput, widthInput, heightInput, radiusInput, marginInput];
   inputs.forEach(input => {
     input.addEventListener('input', () => {
       clearTimeout(calcTimeout);
       calcTimeout = setTimeout(() => {
-        if (poolType.value && form.checkValidity()){
-          const result = calculate();
-          if (result) updateResults(result);
-        }
+        const result = calculate();
+        if (result && lastResult) updateUI(result);
       }, 300);
     });
   });
 
-  // Enter key submits
-  form.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter'){
-      e.preventDefault();
-      calcBtn.click();
-    }
-  });
+  // Initialize
+  toggleRadiusField();
 
-  // Share API support for mobile
-  if (navigator.share && resultsCard){
-    const shareBtn = document.createElement('button');
-    shareBtn.type = 'button';
-    shareBtn.className = 'btn btn-outline';
-    shareBtn.style.marginTop = '8px';
-    shareBtn.textContent = 'اشتراک‌گذاری نتیجه';
-    shareBtn.addEventListener('click', async () => {
-      if (!lastCalculation) return;
-      try {
-        await navigator.share({
-          title: 'محاسبه ورق ژئوممبران استخر',
-          text: `مساحت ورق: ${formatNumber(lastCalculation.sheetArea)} m²\nحجم: ${formatNumber(lastCalculation.volume)} m³`,
-          url: window.location.href
-        });
-      } catch (e) {
-        // User cancelled or error
-      }
-    });
-    document.querySelector('.result-actions').appendChild(shareBtn);
-  }
-
+  // Expose for debugging
+  window.PoolCalculator = { calculate, getInputs, formatNumber };
 })();

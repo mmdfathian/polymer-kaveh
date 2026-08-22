@@ -4,14 +4,16 @@
  * Scope: / (GitHub Pages root)
  */
 
-const CACHE_NAME = 'polymer-kaveh-v20260822-01';
+const CACHE_NAME = 'polymer-kaveh-v20260822-02';
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/projects.html',
   '/about.html',
+  '/calculator.html',
   '/assets/style.css',
   '/assets/app.js',
+  '/assets/calculator.js',
   '/images/logo.svg',
   '/data/content.json',
 ];
