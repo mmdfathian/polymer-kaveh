@@ -1,19 +1,19 @@
 /**
  * Service Worker - Stale-While-Revalidate Strategy
- * Version: 2026-08-21-01
- * Scope: /polymer-kaveh/ (GitHub Pages subpath)
+ * Version: 2026-08-22-01
+ * Scope: / (GitHub Pages root)
  */
 
-const CACHE_NAME = 'polymer-kaveh-v20260821-01';
+const CACHE_NAME = 'polymer-kaveh-v20260822-01';
 const PRECACHE_ASSETS = [
-  '/polymer-kaveh/',
-  '/polymer-kaveh/index.html',
-  '/polymer-kaveh/projects.html',
-  '/polymer-kaveh/about.html',
-  '/polymer-kaveh/assets/style.css',
-  '/polymer-kaveh/assets/app.js',
-  '/polymer-kaveh/images/logo.svg',
-  '/polymer-kaveh/data/content.json',
+  '/',
+  '/index.html',
+  '/projects.html',
+  '/about.html',
+  '/assets/style.css',
+  '/assets/app.js',
+  '/images/logo.svg',
+  '/data/content.json',
 ];
 
 // Patterns that should use Network First (fresh data)
