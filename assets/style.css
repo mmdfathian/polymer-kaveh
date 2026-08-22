@@ -49,8 +49,8 @@
   /* Touch-follow gradient variables */
   --mouse-x:50%;
   --mouse-y:50%;
-  --glow-size:300px;
-  --glow-opacity:0.15;
+  --glow-size:400px;
+  --glow-opacity:0.25;
   --glow-color:var(--primary);
   --card-glow-x:50%;
   --card-glow-y:50%;
@@ -102,7 +102,7 @@
   --logo-green:#08C4B4;
   --logo-bg:#0b1220;
   /* Touch-follow gradient variables for dark mode */
-  --glow-opacity:0.25;
+  --glow-opacity:0.35;
   --glow-color:var(--primary);
 }
 
@@ -139,7 +139,7 @@ body::after{
   position:fixed;
   inset:0;
   pointer-events:none;
-  background:radial-gradient(circle 400px at var(--mouse-x) var(--mouse-y), var(--glow-color) calc(var(--glow-opacity) * 0.3), transparent 80%);
+  background:radial-gradient(circle 500px at var(--mouse-x) var(--mouse-y), var(--glow-color) calc(var(--glow-opacity) * 0.5), transparent 80%);
   opacity:0;
   transition:opacity 0.5s ease;
   z-index:-1;
@@ -162,7 +162,7 @@ body.has-mouse::after{
   position:absolute;
   inset:-2px;
   border-radius:inherit;
-  background:radial-gradient(circle 150px at var(--card-glow-x) var(--card-glow-y), var(--glow-color) var(--card-glow-opacity), transparent 70%);
+  background:radial-gradient(circle 200px at var(--card-glow-x) var(--card-glow-y), var(--glow-color) var(--card-glow-opacity), transparent 70%);
   pointer-events:none;
   opacity:var(--card-glow-opacity);
   transition:opacity 0.2s ease;
@@ -175,10 +175,37 @@ body.has-mouse::after{
   transition:filter 0.3s ease;
 }
 .logo-svg.glowing{
-  filter:drop-shadow(0 0 20px var(--primary));
+  filter:drop-shadow(0 0 30px var(--primary)) drop-shadow(0 0 60px var(--primary));
 }
 
-/* Reduced motion - disable all gradient animations */
+/* 5. Desktop Mouse-Following Gradient (always active on desktop) */
+@media (min-width: 1024px) {
+  .hero{
+    background: 
+      linear-gradient(135deg, #071c2c, #123b50),
+      radial-gradient(circle 600px at var(--mouse-x) var(--mouse-y), var(--primary) 0%, transparent 60%);
+    background-blend-mode: normal, screen;
+  }
+  
+  /* Subtle gradient trail on sections */
+  .section:not(.alt)::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(circle 300px at var(--mouse-x) var(--mouse-y), var(--primary) 0.08, transparent 70%);
+    opacity:0;
+    transition:opacity 0.4s ease;
+    z-index:0;
+  }
+  .section:not(.alt):hover::before{
+    opacity:1;
+  }
+  .section:not(.alt) > *{
+    position:relative;
+    z-index:1;
+  }
+}
 @media(prefers-reduced-motion:reduce){
   .hero::before,
   body::after,
@@ -189,6 +216,14 @@ body.has-mouse::after{
   }
   .logo-svg{
     filter:none !important;
+  }
+  @media (min-width: 1024px) {
+    .hero{
+      background: linear-gradient(135deg, #071c2c, #123b50) !important;
+    }
+    .section:not(.alt)::before{
+      display:none !important;
+    }
   }
 }
 #loading-overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .4s ease,visibility .4s ease}.loading-spinner{width:60px;height:60px;animation:spin 1s linear infinite}.spinner-track{stroke:var(--border)}.spinner-fill{stroke:var(--primary);transform-origin:center;animation:dash 1.5s ease-in-out infinite}@keyframes spin{to{transform:rotate(360deg)}}@keyframes dash{0%{stroke-dashoffset:0;stroke-dasharray:1,150}50%{stroke-dashoffset:-40;stroke-dasharray:90,150}100%{stroke-dashoffset:-120;stroke-dasharray:90,150}}.loading-text{margin-top:16px;font:700 1.1rem/1 var(--text);color:var(--text)}#loading-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}

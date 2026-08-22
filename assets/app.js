@@ -264,7 +264,7 @@ function initScrollReveal(){
         const cardY = ((clientY - rect.top) / rect.height) * 100;
         card.style.setProperty('--card-glow-x', cardX + '%');
         card.style.setProperty('--card-glow-y', cardY + '%');
-        card.style.setProperty('--card-glow-opacity', '0.12');
+        card.style.setProperty('--card-glow-opacity', '0.2');
       }else{
         card.style.setProperty('--card-glow-opacity', '0');
       }
