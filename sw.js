@@ -4,7 +4,7 @@
  * Scope: / (GitHub Pages root)
  */
 
-const CACHE_NAME = 'polymer-kaveh-v20260822-05';
+const CACHE_NAME = 'polymer-kaveh-v20260822-06';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
