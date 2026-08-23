@@ -244,7 +244,7 @@ ${dims}
     widthInput.value = '';
     heightInput.value = '';
     radiusInput.value = '';
-    marginInput.value = '0.3';
+    marginInput.value = '';
     poolType.value = 'sloped45';
     
     resultSheet.style.display = 'none';
