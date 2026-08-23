@@ -4,13 +4,19 @@
  * Scope: / (GitHub Pages root)
  */
 
-const CACHE_NAME = 'polymer-kaveh-v20260822-14';
+const CACHE_NAME = 'polymer-kaveh-v20260822-15';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './projects.html',
   './about.html',
   './calculator.html',
+  './blog.html',
+  './blog-geomembrane-selection.html',
+  './blog-pool-installation-steps.html',
+  './blog-fish-farm-lining.html',
+  './blog-geomembrane-vs-concrete.html',
+  './blog-maintenance-warranty.html',
   './assets/style.css',
   './assets/app.js',
   './assets/calculator.js',
