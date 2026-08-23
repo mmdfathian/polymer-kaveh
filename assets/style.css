@@ -120,6 +120,32 @@
    Calculator Page Styles
    ======================================== */
 
+/* Simple results list */
+.results-simple{
+  list-style:none;
+  margin:0 0 18px;
+  padding:0;
+}
+.results-simple li{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+}
+.results-simple li:last-child{
+  border-bottom:none;
+}
+.results-simple span:first-child{
+  color:var(--text-muted);
+}
+.results-simple strong{
+  color:var(--text);
+  font-size:1.05rem;
+  white-space:nowrap;
+}
+
 .calculator-cta{
   background:var(--cta-calc-bg);
   color:var(--cta-calc-text);

@@ -17,8 +17,8 @@
   const calcBtn = document.getElementById('calcBtn');
   
   // Result elements
-  const resultSheet = document.getElementById('resultSheet');
-  const resultVolume = document.getElementById('resultVolume');
+  const resultsSimple = document.getElementById('resultsSimple');
+  const floorWidthOut = document.getElementById('floorWidthOut');
   const sheetArea = document.getElementById('sheetArea');
   const volume = document.getElementById('volume');
   const resultCta = document.getElementById('resultCta');
@@ -103,7 +103,7 @@
     const A_margin = P * M;
     const A_sheet = A_inner + A_margin;
 
-    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner };
+    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner, L_floor: L, W_floor: W };
   }
 
   // Calculate for cylindrical
@@ -116,7 +116,7 @@
     const A_margin = P * M;
     const A_sheet = A_inner + A_margin;
 
-    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner };
+    return { V, A_sheet, A_floor, A_walls, A_margin, A_inner, L_floor: 2 * r, W_floor: 2 * r };
   }
 
   // Main calculation
@@ -165,9 +165,11 @@
 
     sheetArea.textContent = formatNumber(result.A_sheet);
     volume.textContent = formatNumber(result.V);
+    if (floorWidthOut && typeof result.W_floor === 'number') {
+      floorWidthOut.textContent = formatNumber(result.W_floor);
+    }
 
-    resultSheet.style.display = 'flex';
-    resultVolume.style.display = 'flex';
+    resultsSimple.style.display = 'block';
     resultCta.style.display = 'block';
 
     // Update WhatsApp link with pre-filled message
