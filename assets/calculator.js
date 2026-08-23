@@ -21,11 +21,6 @@
   const resultVolume = document.getElementById('resultVolume');
   const sheetArea = document.getElementById('sheetArea');
   const volume = document.getElementById('volume');
-  const detailBox = document.getElementById('detailBox');
-  const detailFloor = document.getElementById('detailFloor');
-  const detailWalls = document.getElementById('detailWalls');
-  const detailMargin = document.getElementById('detailMargin');
-  const detailInner = document.getElementById('detailInner');
   const resultCta = document.getElementById('resultCta');
   const whatsappCta = document.getElementById('whatsappCta');
   const phoneCta = document.getElementById('phoneCta');
@@ -170,15 +165,9 @@
 
     sheetArea.textContent = formatNumber(result.A_sheet);
     volume.textContent = formatNumber(result.V);
-    
-    detailFloor.textContent = formatNumber(result.A_floor) + ' m²';
-    detailWalls.textContent = formatNumber(result.A_walls) + ' m²';
-    detailMargin.textContent = formatNumber(result.A_margin) + ' m²';
-    detailInner.textContent = formatNumber(result.A_inner) + ' m²';
 
     resultSheet.style.display = 'flex';
     resultVolume.style.display = 'flex';
-    detailBox.style.display = 'block';
     resultCta.style.display = 'block';
 
     // Update WhatsApp link with pre-filled message
