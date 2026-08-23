@@ -15,7 +15,6 @@
   const marginInput = document.getElementById('margin');
   const radiusGroup = document.getElementById('radiusGroup');
   const calcBtn = document.getElementById('calcBtn');
-  const resetBtn = document.getElementById('resetBtn');
   
   // Result elements
   const resultSheet = document.getElementById('resultSheet');
@@ -239,23 +238,7 @@ ${dims}
   }
 
   // Reset form
-  function reset() {
-    lengthInput.value = '';
-    widthInput.value = '';
-    heightInput.value = '';
-    radiusInput.value = '';
-    marginInput.value = '';
-    poolType.value = 'sloped45';
-    
-    resultSheet.style.display = 'none';
-    resultVolume.style.display = 'none';
-    detailBox.style.display = 'none';
-    resultCta.style.display = 'none';
-    
-    lastResult = null;
-    toggleRadiusField();
-  }
-
+  
   // Event listeners
   poolType.addEventListener('change', toggleRadiusField);
   
@@ -264,7 +247,7 @@ ${dims}
     if (result) updateUI(result);
   });
 
-  resetBtn.addEventListener('click', reset);
+  
 
   // Real-time calculation on input (debounced)
   let calcTimeout;
