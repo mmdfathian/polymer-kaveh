@@ -19,6 +19,7 @@
   // Result elements
   const resultsSimple = document.getElementById('resultsSimple');
   const floorWidthOut = document.getElementById('floorWidthOut');
+  const floorLengthOut = document.getElementById('floorLengthOut');
   const sheetArea = document.getElementById('sheetArea');
   const volume = document.getElementById('volume');
   const resultCta = document.getElementById('resultCta');
@@ -167,6 +168,9 @@
     volume.textContent = formatNumber(result.V);
     if (floorWidthOut && typeof result.W_floor === 'number') {
       floorWidthOut.textContent = formatNumber(result.W_floor);
+    }
+    if (floorLengthOut && typeof result.L_floor === 'number') {
+      floorLengthOut.textContent = formatNumber(result.L_floor);
     }
 
     resultsSimple.style.display = 'block';
